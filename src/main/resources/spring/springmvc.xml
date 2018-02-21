@@ -1,0 +1,147 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+	<!-- 使用组件扫描，将@controller注解的类扫描出来在容器中进行注册
+	组件扫描可以扫描标记有@controller、@service、@repository、@component的bean进行扫描
+	 -->
+	 <context:component-scan base-package="cn.itcast.ssm.controller"></context:component-scan>
+		
+	<!-- 注解处理器映射器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/> -->
+	<!-- 注解处理器适配器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/> -->
+	
+	<!-- 上边的注解处理器映射器和适配器配置可以使用下边mvc:annotation-driven代替 -->
+	
+	
+	
+	<mvc:annotation-driven conversion-service="conversionService"
+		 validator="validator">
+	</mvc:annotation-driven>
+ 
+ 	<!-- 自动义转换器 -->
+	<!--<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		&lt;!&ndash; 转换器 &ndash;&gt;
+		<property name="converters">
+			<list>
+				<bean class="cn.itcast.utils.CustomDateConverter"></bean>
+			</list>
+		</property>
+	</bean>-->
+	
+	
+	<!-- 4.ViewResolver视图解析器，解析jsp视图 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	
+	<!-- 校验器 配置 validator -->
+<!--
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		&lt;!&ndash; 校验器 &ndash;&gt;
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+		&lt;!&ndash; 指定校验使用的资源文件，如果不指定则默认使用classpath下的validationMessages.properties &ndash;&gt;
+		&lt;!&ndash;<property name="validationMessageSource" ref="messageSource"></property>&ndash;&gt;
+	</bean>
+-->
+
+	
+	<!-- 6.1.4将validator加到处理器适配器 -->
+	
+	 <!-- 校验错误信息匹配文件 -->
+<!--	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		&lt;!&ndash; 资源文件名  &ndash;&gt;
+		<property name="basenames">
+			<list>
+				<value>classpath:CustomValidationMessages</value>
+			</list>
+		</property>
+		&lt;!&ndash; 资源文件编码格式  &ndash;&gt;
+		<property name="fileEncodings" value="utf-8"/>
+		&lt;!&ndash; 对资源文件内容缓存时间，单位秒 &ndash;&gt;
+		<property name="cacheSeconds" value="120"></property>
+	</bean>-->
+	
+	<!-- 异常处理器配置 -->
+	<!--<bean id="handlerExceptionResolver1" class="cn.itcast.ssm.ExceptionResolver.CustomExceptionResolver"/>
+	<bean id="handlerExceptionResolver2" class="cn.itcast.ssm.ExceptionResolver.CopyOfCustomExceptionResolver"/>
+	-->
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大尺寸为5mb -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+	<!--6.5.3.2配置json转换器  -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean> -->
+	<!-- 如果使用<mvc:annotation-driven /> 则不用定义上边的内容。 -->
+	 <mvc:resources location="/upload/" mapping="/upload/**"/>
+	 <mvc:resources location="/js/" mapping="/js/**"/>
+	
+	<!-- 7.3.1针对某种mapping配置拦截器 -->
+<!--
+	<bean  class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+		<property name="interceptors">
+		<list>
+			<ref bean="handlerInterceptor1"/>
+			<ref bean="handlerInterceptor2"/>
+		</list>
+		</property>
+	</bean>
+	
+	<bean id="handlerInterceptor1"  class="cn.itcast.mybatis.HandlerInterceptor.HandlerInterceptor1"/>
+	<bean id="handlerInterceptor2" class="cn.itcast.mybatis.HandlerInterceptor.HandlerInterceptor2"/>
+-->
+
+	<!-- 针对所有mapping配置全局拦截器 -->
+	<!-- 拦截器 -->
+<!--	<mvc:interceptors>
+		&lt;!&ndash; 多个拦截器，顺序执行 &ndash;&gt;
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="cn.itcast.mybatis.HandlerInterceptor.HandlerInterceptor1"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="cn.itcast.mybatis.HandlerInterceptor.HandlerInterceptor2"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="cn.itcast.mybatis.HandlerInterceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>-->
+</beans>
+
+<!-- 
+配置多个异常处理器的目的是针对不同的异常类型分别进行处理，并且springmvc在执行异常处理器时是按配置的顺序去执行的，
+但是需要注意的是除最后一个异常处理器返回ModelAndView外，其它的异常处理器返回null，
+
+
+ -->
+
+
+
+
+
+
