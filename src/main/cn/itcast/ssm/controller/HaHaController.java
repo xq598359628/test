@@ -21,7 +21,7 @@ public class HaHaController {
 		Items items2 = new Items();
 		items2.setName("哈哈");
 		items2.setPrice(5.0f);
-		
+		items2.setPrice(5.32f);
 		model.addAttribute("items", items2);
 		
 		return "haha";
